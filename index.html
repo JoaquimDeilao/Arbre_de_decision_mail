@@ -5,28 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arbre de Décision - Journée sans Mail</title>
   <style>
+    /* Body styling */
     body {
       font-family: Calibri, sans-serif;
       background-color: #ffcd00;
-      color: #ffffff;
       margin: 0;
       padding: 0;
       text-align: center;
     }
 
+    /* Question and response blocks */
     .question-box {
       background-color: #000000;
+      color: #ffffff;
       border-radius: 12px;
       padding: 30px;
-      margin: 30px auto;
+      margin: 20px auto;
       width: 90%;
       max-width: 600px;
-      text-align: left;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
       position: relative;
     }
 
+    /* Question styling */
     .question {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: bold;
       text-transform: uppercase;
       color: #ffffff;
@@ -35,165 +38,146 @@
       gap: 10px;
     }
 
-    .button {
-      display: block;
-      margin: 20px auto;
-      padding: 15px 20px;
-      background-color: #000000;
-      color: #ffffff;
+    /* Response button styling */
+    .responses {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .response {
+      background-color: #ffcd00;
+      color: #000000;
       border: none;
       border-radius: 8px;
-      cursor: pointer;
       font-size: 20px;
       font-weight: bold;
-      text-transform: lowercase;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      width: 48%; /* 48% to allow side-by-side */
     }
 
-    .button:hover {
-      background-color: #333333;
+    .response:hover {
+      background-color: #e6b800;
     }
 
-    .icon {
-      width: 40px;
-      height: 40px;
-    }
-
+    /* Logo styling */
     .logo {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
       width: 50px;
       height: auto;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .responses {
+        flex-direction: column;
+      }
+
+      .response {
+        width: 100%; /* Full width for smaller screens */
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Question Block -->
   <div id="decision-tree" class="question-box">
     <p id="question-text" class="question">
       <img src="question.png" class="icon" alt="Icône question">
       AS-TU VRAIMENT BESOIN D’ENVOYER UN EMAIL ?
     </p>
-    <button class="button" onclick="nextStep('yes')">
-      <img src="pouce-en-lair.png" class="icon" alt="Icône pouce">
-      oui, j’en suis convaincu
-    </button>
-    <button class="button" onclick="nextStep('no')">
-      <img src="debutant.png" class="icon" alt="Icône débutant">
-      non, explorons d’autres options
-    </button>
-    <img src="logo.png" class="logo" alt="Logo Conseil Départemental">
+    <div id="response-buttons" class="responses">
+      <button class="response" onclick="nextStep('yes')">
+        Oui, j’en suis convaincu
+      </button>
+      <button class="response" onclick="nextStep('no')">
+        Non, explorons d’autres options
+      </button>
+    </div>
   </div>
 
+  <!-- Logo -->
+  <img src="logo.png" class="logo" alt="Logo Conseil Départemental">
+
   <script>
+    // Current step in the tree
     let currentStep = "start";
 
+    // Tree structure
+    const tree = {
+      start: {
+        question: "TON EMAIL NÉCESSITE-T-IL UNE RÉPONSE RAPIDE ?",
+        responses: [
+          { text: "Oui, réponse rapide souhaitée", next: "immediate-action" },
+          { text: "Non, pas de réponse immédiate attendue", next: "trace" },
+        ],
+      },
+      immediate-action: {
+        question: "UTILISEZ UN APPEL TÉLÉPHONIQUE OU UN MESSAGE INSTANTANÉ TEAMS POUR UNE RÉPONSE RAPIDE.",
+        responses: [],
+      },
+      trace: {
+        question: "EST-CE IMPORTANT DE GARDER UNE TRACE ÉCRITE DE CET ÉCHANGE ?",
+        responses: [
+          { text: "Oui, besoin de traçabilité", next: "email-solution" },
+          { text: "Non, pas besoin de trace", next: "audience" },
+        ],
+      },
+      audience: {
+        question: "CE MESSAGE CONCERNE-T-IL PLUSIEURS PERSONNES OU JUSTE UNE SEULE ?",
+        responses: [
+          { text: "Plusieurs personnes", next: "teams-group" },
+          { text: "Une seule personne", next: "instant-message" },
+        ],
+      },
+      teams-group: {
+        question: "ORGANISEZ UNE VISIO TEAMS OU ENVOYEZ UN MESSAGE DE GROUPE SUR TEAMS.",
+        responses: [],
+      },
+      instant-message: {
+        question: "UN MESSAGE INSTANTANÉ TEAMS SUFFIT.",
+        responses: [],
+      },
+      email-solution: {
+        question: "ENVOYEZ UN EMAIL POUR GARDER UNE TRACE.",
+        responses: [],
+      },
+    };
+
+    // Function to move to the next step
     function nextStep(answer) {
-      const tree = {
-        start: {
-          question: "TON EMAIL NÉCESSITE-T-IL UNE RÉPONSE RAPIDE ?",
-          questionIcon: "urgent.png",
-          responses: [
-            {
-              text: "oui, réponse rapide souhaitée",
-              icon: "urgent(1).png",
-              next: "immediate-action",
-            },
-            {
-              text: "non, pas de réponse immédiate attendue",
-              icon: "la-paresse.png",
-              next: "trace",
-            },
-          ],
-        },
-        immediate-action: {
-          question: "UTILISEZ UN APPEL TÉLÉPHONIQUE OU UN MESSAGE INSTANTANÉ TEAMS POUR UNE RÉPONSE RAPIDE.",
-          questionIcon: "urgent(1).png",
-          responses: [],
-        },
-        trace: {
-          question: "EST-CE IMPORTANT DE GARDER UNE TRACE ÉCRITE DE CET ÉCHANGE ?",
-          questionIcon: "archiver.png",
-          responses: [
-            {
-              text: "oui, besoin de traçabilité",
-              icon: "e-mail.png",
-              next: "email-solution",
-            },
-            {
-              text: "non, pas besoin de trace",
-              icon: "pas-d-icone.png",
-              next: "audience",
-            },
-          ],
-        },
-        audience: {
-          question: "CE MESSAGE CONCERNE-T-IL PLUSIEURS PERSONNES OU JUSTE UNE SEULE ?",
-          questionIcon: "jeunesse.png",
-          responses: [
-            {
-              text: "plusieurs personnes",
-              icon: "conference-video.png",
-              next: "teams-group",
-            },
-            {
-              text: "une seule personne",
-              icon: "chat.png",
-              next: "instant-message",
-            },
-          ],
-        },
-        teams-group: {
-          question: "ORGANISEZ UNE VISIO TEAMS OU ENVOYEZ UN MESSAGE DE GROUPE SUR TEAMS.",
-          questionIcon: "conference-video.png",
-          responses: [],
-        },
-        instant-message: {
-          question: "UN MESSAGE INSTANTANÉ TEAMS SUFFIT.",
-          questionIcon: "chat.png",
-          responses: [],
-        },
-        email-solution: {
-          question: "ENVOYEZ UN EMAIL POUR GARDER UNE TRACE.",
-          questionIcon: "e-mail.png",
-          responses: [],
-        },
-      };
-
       const step = tree[answer];
-      if (!step.responses.length) {
-        document.getElementById("decision-tree").innerHTML = `
-          <p class="question">
-            <img src="${step.questionIcon}" class="icon" alt="Icône">
-            ${step.question}
-          </p>
-          <button class="button" onclick="reset()">recommencer</button>
-          <img src="logo.png" class="logo" alt="Logo Conseil Départemental">
-        `;
-      } else {
-        let responsesHTML = step.responses
-          .map(
-            (res) => `
-          <button class="button" onclick="nextStep('${res.next}')">
-            <img src="${res.icon}" class="icon" alt="Icône réponse">
-            ${res.text}
-          </button>
-        `
-          )
-          .join("");
+      const questionBox = document.getElementById("decision-tree");
+      const responseButtons = document.getElementById("response-buttons");
 
-        document.getElementById("decision-tree").innerHTML = `
-          <p class="question">
-            <img src="${step.questionIcon}" class="icon" alt="Icône">
-            ${step.question}
-          </p>
-          ${responsesHTML}
-          <img src="logo.png" class="logo" alt="Logo Conseil Départemental">
-        `;
+      // Update question
+      document.getElementById("question-text").innerHTML = step.question;
+
+      // Clear previous responses
+      responseButtons.innerHTML = "";
+
+      // Add new responses
+      if (step.responses.length > 0) {
+        step.responses.forEach((response) => {
+          const button = document.createElement("button");
+          button.className = "response";
+          button.innerText = response.text;
+          button.onclick = () => nextStep(response.next);
+          responseButtons.appendChild(button);
+        });
+      } else {
+        responseButtons.innerHTML = `<button class="response" onclick="reset()">Recommencer</button>`;
       }
     }
 
+    // Reset tree
     function reset() {
-      currentStep = "start";
       nextStep("start");
     }
   </script>
