@@ -24,18 +24,25 @@
       width: 90%;
       max-width: 600px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-      position: relative;
+      text-align: center;
     }
 
     /* Question styling */
     .question {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
       text-transform: uppercase;
       color: #ffffff;
+      margin-bottom: 20px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
+    }
+
+    .question img {
+      width: 30px;
+      height: 30px;
+      margin-bottom: 10px;
     }
 
     /* Response button styling */
@@ -43,7 +50,6 @@
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      margin-top: 20px;
       gap: 10px;
     }
 
@@ -52,7 +58,7 @@
       color: #000000;
       border: none;
       border-radius: 8px;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       padding: 15px;
       text-align: center;
@@ -66,9 +72,8 @@
 
     /* Logo styling */
     .logo {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
+      display: block;
+      margin: 20px auto 0;
       width: 50px;
       height: auto;
     }
@@ -89,14 +94,14 @@
   <!-- Question Block -->
   <div id="decision-tree" class="question-box">
     <p id="question-text" class="question">
-      <img src="question.png" class="icon" alt="Icône question">
+      <img src="question.png" alt="Icône question">
       AS-TU VRAIMENT BESOIN D’ENVOYER UN EMAIL ?
     </p>
     <div id="response-buttons" class="responses">
-      <button class="response" onclick="nextStep('yes')">
+      <button class="response" onclick="nextStep('start')">
         Oui, j’en suis convaincu
       </button>
-      <button class="response" onclick="nextStep('no')">
+      <button class="response" onclick="nextStep('urgent')">
         Non, explorons d’autres options
       </button>
     </div>
@@ -106,13 +111,11 @@
   <img src="logo.png" class="logo" alt="Logo Conseil Départemental">
 
   <script>
-    // Current step in the tree
-    let currentStep = "start";
-
     // Tree structure
     const tree = {
       start: {
         question: "TON EMAIL NÉCESSITE-T-IL UNE RÉPONSE RAPIDE ?",
+        icon: "urgent.png",
         responses: [
           { text: "Oui, réponse rapide souhaitée", next: "immediate-action" },
           { text: "Non, pas de réponse immédiate attendue", next: "trace" },
@@ -120,10 +123,12 @@
       },
       immediate-action: {
         question: "UTILISEZ UN APPEL TÉLÉPHONIQUE OU UN MESSAGE INSTANTANÉ TEAMS POUR UNE RÉPONSE RAPIDE.",
+        icon: "phone.png",
         responses: [],
       },
       trace: {
         question: "EST-CE IMPORTANT DE GARDER UNE TRACE ÉCRITE DE CET ÉCHANGE ?",
+        icon: "archive.png",
         responses: [
           { text: "Oui, besoin de traçabilité", next: "email-solution" },
           { text: "Non, pas besoin de trace", next: "audience" },
@@ -131,6 +136,7 @@
       },
       audience: {
         question: "CE MESSAGE CONCERNE-T-IL PLUSIEURS PERSONNES OU JUSTE UNE SEULE ?",
+        icon: "group.png",
         responses: [
           { text: "Plusieurs personnes", next: "teams-group" },
           { text: "Une seule personne", next: "instant-message" },
@@ -138,32 +144,38 @@
       },
       teams-group: {
         question: "ORGANISEZ UNE VISIO TEAMS OU ENVOYEZ UN MESSAGE DE GROUPE SUR TEAMS.",
+        icon: "video.png",
         responses: [],
       },
       instant-message: {
         question: "UN MESSAGE INSTANTANÉ TEAMS SUFFIT.",
+        icon: "chat.png",
         responses: [],
       },
       email-solution: {
         question: "ENVOYEZ UN EMAIL POUR GARDER UNE TRACE.",
+        icon: "email.png",
         responses: [],
       },
     };
 
-    // Function to move to the next step
-    function nextStep(answer) {
-      const step = tree[answer];
+    // Function to display the next step
+    function nextStep(stepName) {
+      const step = tree[stepName];
       const questionBox = document.getElementById("decision-tree");
       const responseButtons = document.getElementById("response-buttons");
 
       // Update question
-      document.getElementById("question-text").innerHTML = step.question;
+      document.getElementById("question-text").innerHTML = `
+        <img src="${step.icon}" alt="Icône">
+        ${step.question}
+      `;
 
       // Clear previous responses
       responseButtons.innerHTML = "";
 
       // Add new responses
-      if (step.responses.length > 0) {
+      if (step.responses && step.responses.length > 0) {
         step.responses.forEach((response) => {
           const button = document.createElement("button");
           button.className = "response";
@@ -178,7 +190,7 @@
 
     // Reset tree
     function reset() {
-      nextStep("start");
+      location.reload();
     }
   </script>
 </body>
